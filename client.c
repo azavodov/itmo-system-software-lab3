@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     socket_address.sin_family = AF_INET;
     socket_address.sin_port = htons(PORT);
     inet_pton(AF_INET, argv[1], &socket_address.sin_addr);
-    connect(tcp_client_socket_descriptor, (struct sockaddr *) &socket_address, sizeof socket_address);
+    (void)connect(tcp_client_socket_descriptor, (struct sockaddr *) &socket_address, sizeof socket_address);
 
     for (int i = 2; i < argc; ++i) {
         memset(client_message, 0, MAX_LENGTH);
@@ -29,13 +29,13 @@ int main(int argc, char *argv[]) {
         printf(" --- Path: %s\n", argv[i]);
         strcat(client_message, argv[i]);
         strcat(client_message, "\n");
-        write(tcp_client_socket_descriptor, client_message, strlen(client_message));
-        read(tcp_client_socket_descriptor, server_message, MAX_LENGTH);
+        (void)write(tcp_client_socket_descriptor, client_message, strlen(client_message));
+        (void)read(tcp_client_socket_descriptor, server_message, MAX_LENGTH);
         printf("%s", server_message);
     }
 
     memset(client_message, 0, MAX_LENGTH);
     strcat(client_message, "exit\n");
-    write(tcp_client_socket_descriptor, client_message, strlen(client_message));
+    (void)write(tcp_client_socket_descriptor, client_message, strlen(client_message));
     return 0;
 }

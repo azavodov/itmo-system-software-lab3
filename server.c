@@ -36,7 +36,7 @@ void *client_request(void *p_client_socket_descriptor) {
         DIR *directory = opendir((const char *) client_message);
         if (!directory) {
             char *s = "server: path does not exist\n";
-            write(client_socket_descriptor, s, strlen(s));
+            (void)write(client_socket_descriptor, s, strlen(s));
         } else {
             memset(server_message, 0, MAX_LENGTH);
             while ((file = readdir(directory)) != NULL) {
@@ -44,13 +44,15 @@ void *client_request(void *p_client_socket_descriptor) {
                 strcat((char *) server_message, "\n");
             }
             closedir(directory);
-            write(client_socket_descriptor, (char *) server_message, strlen((char *) server_message));
+            (void)write(client_socket_descriptor, (char *) server_message, strlen((char *) server_message));
         }
     }
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    (void) argc; (void) argv;
+
     struct sockaddr_in socket_address;
     memset(&socket_address, 0, sizeof socket_address);
     socket_address.sin_family = AF_INET;
@@ -58,7 +60,7 @@ int main() {
     socket_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
     tcp_server_socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-    bind(tcp_server_socket_descriptor, (struct sockaddr *) &socket_address, sizeof(socket_address));
+    (void)bind(tcp_server_socket_descriptor, (struct sockaddr *) &socket_address, sizeof(socket_address));
     listen(tcp_server_socket_descriptor, QUEUE_LIMIT);
 
     printf("server: waiting for connections ...\n");
