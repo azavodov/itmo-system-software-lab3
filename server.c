@@ -17,6 +17,7 @@ void *client_request(void *p_client_socket_descriptor) {
     uint8_t client_message[MAX_LENGTH + 1], server_message[MAX_LENGTH + 1];
     memset(client_message, 0, MAX_LENGTH);
     memset(server_message, 0, MAX_LENGTH);
+    ssize_t bytes_written;
     int message_length;
     while (1) {
         memset(client_message, 0, MAX_LENGTH);
@@ -27,7 +28,7 @@ void *client_request(void *p_client_socket_descriptor) {
         client_message[message_length - 1] = 0;
         if (message_length - 2 >= 0 && client_message[message_length - 2] == '\r')
             client_message[message_length - 2] = 0;
-        if (strcmp((const char *) client_message, "exit") == 0) {
+        if (strcmp ((const char *) client_message, "exit") == 0) {
             close(client_socket_descriptor);
             return NULL;
         }
@@ -36,7 +37,10 @@ void *client_request(void *p_client_socket_descriptor) {
         DIR *directory = opendir((const char *) client_message);
         if (!directory) {
             char *s = "server: path does not exist\n";
-            (void)write(client_socket_descriptor, s, strlen(s));
+            bytes_written = write(client_socket_descriptor, s, strlen(s));
+            if (bytes_written < 0) {
+                printf("server: some problem with response...");
+            }
         } else {
             memset(server_message, 0, MAX_LENGTH);
             while ((file = readdir(directory)) != NULL) {
@@ -44,7 +48,10 @@ void *client_request(void *p_client_socket_descriptor) {
                 strcat((char *) server_message, "\n");
             }
             closedir(directory);
-            (void)write(client_socket_descriptor, (char *) server_message, strlen((char *) server_message));
+            bytes_written = write(client_socket_descriptor, (char *) server_message, strlen((char *) server_message));
+            if (bytes_written < 0) {
+                printf("server: some problem with response...");
+            }
         }
     }
 }

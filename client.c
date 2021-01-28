@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <netinet/ip.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -12,6 +11,7 @@ int main(int argc, char *argv[]) {
     if (argc < 3) {
         return -1;
     }
+    ssize_t bytes_w_r;
 
     char client_message[MAX_LENGTH], server_message[MAX_LENGTH];
     int tcp_client_socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
@@ -29,13 +29,22 @@ int main(int argc, char *argv[]) {
         printf(" --- Path: %s\n", argv[i]);
         strcat(client_message, argv[i]);
         strcat(client_message, "\n");
-        (void)write(tcp_client_socket_descriptor, client_message, strlen(client_message));
-        (void)read(tcp_client_socket_descriptor, server_message, MAX_LENGTH);
+        bytes_w_r = write(tcp_client_socket_descriptor, client_message, strlen(client_message));
+        if (bytes_w_r < 0) {
+            printf("client: some problem with server connection...");
+        }
+        bytes_w_r = read(tcp_client_socket_descriptor, server_message, MAX_LENGTH);
+        if (bytes_w_r < 0) {
+            printf("client: some problem with server connection...");
+        }
         printf("%s", server_message);
     }
 
     memset(client_message, 0, MAX_LENGTH);
     strcat(client_message, "exit\n");
-    (void)write(tcp_client_socket_descriptor, client_message, strlen(client_message));
+    bytes_w_r = write(tcp_client_socket_descriptor, client_message, strlen(client_message));
+    if (bytes_w_r < 0) {
+        printf("client: some problem with server connection...");
+    }
     return 0;
 }
