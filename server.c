@@ -20,8 +20,7 @@ void *client_request(void *p_client_socket_descriptor) {
     int message_length;
     while (1) {
         memset(client_message, 0, MAX_LENGTH);
-        while ((message_length = read(client_socket_descriptor, client_message, MAX_LENGTH))
-               > 0) {
+        while ((message_length = read(client_socket_descriptor, client_message, MAX_LENGTH)) > 0) {
 
             if (client_message[message_length - 1] == '\n') break;
         }
@@ -51,9 +50,7 @@ void *client_request(void *p_client_socket_descriptor) {
 }
 
 
-int main(int argc, char *argv[]) {
-    (void) argc; (void) argv;
-
+int main() {
     struct sockaddr_in socket_address;
     memset(&socket_address, 0, sizeof socket_address);
     socket_address.sin_family = AF_INET;

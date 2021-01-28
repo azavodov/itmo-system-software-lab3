@@ -32,11 +32,10 @@ int main(int argc, char *argv[]) {
         write(tcp_client_socket_descriptor, client_message, strlen(client_message));
         read(tcp_client_socket_descriptor, server_message, MAX_LENGTH);
         printf("%s", server_message);
-        printf(" --- --- ---\n");
     }
 
     memset(client_message, 0, MAX_LENGTH);
-    strcat(client_message, "client: exit\n");
+    strcat(client_message, "exit\n");
     write(tcp_client_socket_descriptor, client_message, strlen(client_message));
     return 0;
 }
